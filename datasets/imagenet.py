@@ -9,9 +9,7 @@ num_examples_for_train = 1281167
 num_examples_for_test = 500
 num_classes = 1001
 
-data_augmentation_args = {}
-
-def _parse_one_record(record):
+def _parse_one_record(record, is_training, data_augmentation_args):
     feature_map = {
         'image/encoded': tf.FixedLenFeature([], dtype=tf.string, default_value=''),
         'image/class/label': tf.FixedLenFeature([], dtype=tf.int64, default_value=-1),
@@ -40,10 +38,14 @@ def _parse_one_record(record):
     bbox = tf.expand_dims(bbox, 0)
     bbox = tf.transpose(bbox, [0, 2, 1])
 
-    return image, label, bbox
+    if is_training:
+        image, label, bbox = _data_augmentation(image, label, bbox, data_augmentation_args)
+    else:
+        image, label, bbox = _process_for_eval(image, label, bbox, data_augmentation_args)
 
-def _data_augmentation(image, label, bbox):
-    global data_augmentation_args
+    return image, label
+
+def _data_augmentation(image, label, bbox, data_augmentation_args):
     print("Use data_augmentation_args: ", data_augmentation_args)
 
     ## crop according to the bbox
@@ -98,8 +100,7 @@ def _data_augmentation(image, label, bbox):
 
     return image, label, bbox
 
-def _process_for_eval(image, label, bbox):
-    global data_augmentation_args
+def _process_for_eval(image, label, bbox, data_augmentation_args):
     print("Use data_augmentation_args: ", data_augmentation_args)
 
     image = tf.expand_dims(image, 0)
@@ -120,8 +121,6 @@ def _process_for_eval(image, label, bbox):
 
 
 def train_input_fn(data_dir, batch_size, epochs, **kargs):
-    global data_augmentation_args
-    data_augmentation_args = kargs
     filenames =  [os.path.join(data_dir, 'train/train-%05d-of-01024' % i) for i in range(1024)]
     # print("train data files lists: " + str(filenames))
     for path in filenames:
@@ -129,17 +128,14 @@ def train_input_fn(data_dir, batch_size, epochs, **kargs):
             raise ValueError(path + " not found")
     dataset = tf.data.Dataset.list_files(filenames, shuffle=True)
     dataset = dataset.apply(tf.data.experimental.parallel_interleave(tf.data.TFRecordDataset, cycle_length=10))
-    # dataset = tf.data.TFRecordDataset(filenames)
+    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     dataset = dataset.apply(tf.data.experimental.shuffle_and_repeat(100 * batch_size, epochs))
 
-    dataset = dataset.map(_parse_one_record)
-    dataset = dataset.map(_data_augmentation)
-
-    dataset = dataset.apply(tf.data.experimental.map_and_batch(lambda image, label, bbox: (image, label), batch_size))
+    dataset = dataset.apply(tf.data.experimental.map_and_batch(lambda record: _parse_one_record(record, True, kargs), batch_size))
     dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     return dataset
 
-def test_input_fn(data_dir, batch_size):
+def test_input_fn(data_dir, batch_size, **kargs):
     filenames = [os.path.join(data_dir, 'validation/validation-%05d-of-00128' % i)
             for i in range(128)]
     # print("test data files lists: " + str(filenames))
@@ -148,13 +144,10 @@ def test_input_fn(data_dir, batch_size):
             raise ValueError(path + " not found")
     dataset = tf.data.Dataset.list_files(filenames, shuffle=False)
     dataset = dataset.apply(tf.data.experimental.parallel_interleave(tf.data.TFRecordDataset, cycle_length=10))
-    # dataset = tf.data.TFRecordDataset(filenames)
-    dataset = dataset.apply(tf.data.experimental.shuffle_and_repeat(2 * num_examples_for_test, -1))
+    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+    dataset = dataset.repeat(-1)
 
-    dataset = dataset.map(_parse_one_record)
-    dataset = dataset.map(_process_for_eval)
-
-    dataset = dataset.apply(tf.data.experimental.map_and_batch(lambda image, label, bbox: (image, label), batch_size))
+    dataset = dataset.apply(tf.data.experimental.map_and_batch(lambda record: _parse_one_record(record, False, kargs), batch_size))
     dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     return dataset
 

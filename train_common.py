@@ -152,13 +152,18 @@ def run_op(ops, tf_training, store_model_path, train_args):
     train_true_count = 0
     max_test_acc = 0.0
     start_time = time.time()
-    for step in range(int(tf.train.global_step(sess, global_step)), max_steps):
+    start_step = int(tf.train.global_step(sess, global_step))
+    for step in range(start_step, max_steps):
         if step % 100 == 0:
             duration = time.time() - start_time
             _, summary_str, loss_value, re_loss_value, train_predictions = sess.run(ops, feed_dict={tf_training: True})
             num_examples_per_step = train_batch_size * num_gpus
-            examples_per_sec = 100 * num_examples_per_step / duration
-            sec_per_batch = duration / num_gpus / 100
+            if step == start_step:
+                examples_per_sec = num_examples_per_step / duration
+                sec_per_batch = duration / num_gpus
+            else:
+                examples_per_sec = 100 * num_examples_per_step / duration
+                sec_per_batch = duration / num_gpus / 100
 
             train_true_count = np.sum(train_predictions)
             # train_true_count = 0

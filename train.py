@@ -47,7 +47,7 @@ def train(_):
         tf_training = tf.placeholder(tf.bool, shape=())
         # train_dataset = dataset.distorted_inputs(256, "resnet18", use_std=True).make_one_shot_iterator()
         train_dataset = dataset.train_input_fn(FLAGS.data_dir, train_batch_size, max_epochs, **train_args.data_augmentation_args).make_one_shot_iterator()
-        test_dataset = dataset.test_input_fn(FLAGS.data_dir, test_batch_size).make_one_shot_iterator()
+        test_dataset = dataset.test_input_fn(FLAGS.data_dir, test_batch_size, **train_args.data_augmentation_args).make_one_shot_iterator()
         # test_dataset = dataset.inputs(False, 256, "resnet18", use_std=True).make_one_shot_iterator()
 
         ## get parameters and computational cost

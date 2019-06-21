@@ -66,7 +66,7 @@ def train_with_graph(weights_dict, channel_num_after_pruned, weight_decay, store
         ###### Get data
         tf_training = tf.placeholder(tf.bool, shape=())
         train_dataset = dataset.train_input_fn(FLAGS.data_dir, train_batch_size, max_epochs, **config.args.data_augmentation_args).make_one_shot_iterator()
-        test_dataset = dataset.test_input_fn(FLAGS.data_dir, test_batch_size).make_one_shot_iterator()
+        test_dataset = dataset.test_input_fn(FLAGS.data_dir, test_batch_size, **config.args.data_augmentation_args).make_one_shot_iterator()
 
         ###### put op on different GPU
         train_args.learning_rate = lr
