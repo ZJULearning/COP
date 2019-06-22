@@ -6,7 +6,7 @@ width = 224
 depth = 3
 image_bytes = height * width * depth
 num_examples_for_train = 1281167
-num_examples_for_test = 500
+num_examples_for_test = 50000
 num_classes = 1001
 
 def _parse_one_record(record, is_training, data_augmentation_args):

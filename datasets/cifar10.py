@@ -19,7 +19,7 @@ def _parse_one_record(record, is_training, data_augmentation_args):
         [depth, height, width])
     uint8image = tf.transpose(depth_major, [1, 2, 0])
     image = tf.cast(uint8image, tf.float32)
-    
+
     if is_training:
         image, label = _data_augmentation(image, label, data_augmentation_args)
     else:
@@ -34,6 +34,7 @@ def _parse_one_record(record, is_training, data_augmentation_args):
     return image, label
 
 def _data_augmentation(image, label, data_augmentation_args):
+    print("Use data_augmentation_args: ", data_augmentation_args)
     ## pad and crop
     if data_augmentation_args["padding"]:
         reshaped_image = tf.image.resize_image_with_crop_or_pad(image, 40, 40)
