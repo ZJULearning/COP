@@ -153,6 +153,8 @@ def run_op(ops, tf_training, store_model_path, train_args):
     max_test_acc = 0.0
     start_time = time.time()
     start_step = int(tf.train.global_step(sess, global_step))
+    sess.graph.finalize()
+    
     for step in range(start_step, max_steps):
         if step % 100 == 0:
             duration = time.time() - start_time
