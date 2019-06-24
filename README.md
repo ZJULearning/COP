@@ -20,15 +20,30 @@ You are highly **recommended** to use our [docker image](https://github.com/chee
 
 
 
-## Usage
-```
+## Quick Start
+```bash
+# arguments:
+#		--train_dir: the directory to save the log file and checkout
+# 	--dataset: it could be "cifar10", "cifar100" and "imagenet"
+#		--data_dir: the directory to read data. 
+#			- For cifar10: The data files are $data_dir/cifar-10-batches-bin/*.bin
+#			- For cifar100: The data files are $data_dir/cifar-100-binary/*.bin
+#			- For imagenet: The data files are $data_dir/train/* and $data_dir/validation/*(TFRecord-type)
+#		--network: it could be "vgg16", "vgg11", "resnet18", "resnet32", "mobilenet_for_cifar" and "mobilenet_for_imagenet"
+#		--alpha, beta, gamma: they are the coefficients when computing the importance of filts, see the paper for details
+#		--prune_rate: the ratio of filters to be pruned
+
+
+## to train a model
+mkdir data && cd data && wget https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz && tar -zxvf cifar-10-binary.tar.gz
+python train.py --train_dir=vgg-cifar10-model --dataset="cifar10" --data_dir="./data" --network="vgg16"
+
+## to prune and finetune a pretrained model
 train_dir=vgg-cifar10-model
-python train.py --train_dir=$train_dir --dataset="cifar10" --data_dir="./data" --network="vgg16" # to train a model
-
-python auto_prune.py --train_dir=$train_dir --dataset="cifar10" --data_dir="./data" --network="vgg16" --alpha=1.0 --beta=0.0 --gamma=3.0 --prune_rate=0.1 # to prune and finetune a pretrained model
+python auto_prune.py --train_dir=$train_dir --dataset="cifar10" --data_dir="./data" --network="vgg16" --alpha=1.0 --beta=0.0 --gamma=3.0 --prune_rate=0.1
 ```
 
-Please see `train.sh` and `train_finetune.sh` for more usage
+Please see `train.sh` and `train_finetune.sh` for more usage. The imagenet dataset need to transforming to TFRecord-type first, see `extra/README.md` for details.
 
 
 
@@ -49,7 +64,8 @@ The following table shows the datasets and models which could be used directly n
 | --------- | ------- | -------- | -------- |
 | VGG11     | N       | N        | Y        |
 | VGG16     | Y       | Y        | N        |
-| ResNet    | Y       | Y        | Y        |
+| ResNet18  | N       | N        | Y        |
+| ResNet32  | Y       | Y        | N        |
 | MobileNet | Y       | Y        | Y        |
 | ...       |         |          |          |
 
@@ -57,7 +73,7 @@ The following table shows the datasets and models which could be used directly n
 
 ## Use Your Own Models and Datasets
 
-### Add new dataset
+### Use new dataset
 
 1. You should put your new dataset in `./datasets/`, please see `./datasets/cifar10.py` for reference.
 
@@ -68,11 +84,8 @@ The following table shows the datasets and models which could be used directly n
    - `train_input_fn` should take 3 parameters, which are "data_directory", "batch_size" and "epochs" respectively, and it should return a tf.data.Dataset-type class. You should also do shuffling, data augmentation and batch internally.
    - `test_input_fn` should take 2 parameters, which are  "data_directory" and "batch_size", and it should return a tf.data.Dataset-type class too.
 
-4. You could also define other functions you need.
-
-5. Import the new dataset to `config.py` and add the new term to `parse_net_and_dataset` in `config.py` (just mimic what CIFAR10 does).
-
-   
+4. Import the new dataset to `config.py` and add the new term to `parse_net_and_dataset` in `config.py` (just mimic what CIFAR10 does).
+  
 
 Totally speaking, you should create a new file `datasets/new_dataset.py` which contains at least the following 2 functions and tell `config.py` to parse the dataset correctly. 
 
@@ -85,7 +98,7 @@ def train_input_fn(data_dir, batch_size, epochs, **kargs):
     epochs: the dataset could provide how many epochs, -1 for infinity
     **kargs: any other parameters you want
   Return:
-  	dataset: an object of type tf.data.Dataset
+  	dataset: an object of type tf.data.Dataset(or its sub-classes)
 	"""
 	pass
 
@@ -96,17 +109,16 @@ def test_input_fn(data_dir, batch_size, **kargs):
     batch_size: the batch size of the dataset
     **kargs: any other parameters you want
   Return:
-  	dataset: an object of type tf.data.Dataset
+  	dataset: an object of type tf.data.Dataset(or its sub-classes)
 	"""
 	pass
 ```
 
 
-
-### Add new model
+### Use new model
 
 1. You need to create 2 new files to use a  new model, one for the definition of the model and the other for the pruning details of the model. Put the first file in `./networks/` and the second file in `./prune_algorithm/`.
-2. For the definition of the model, you should inherit from the class `ClassificationBase`, it has implement some essential functions for you. You only need to implement all abstract methods defined in `ClassificationBase`. See the comments in `ClassificationBase` for details. (You could see `./networks/vgg16` for reference).
-3. For the pruning algorithm of the model, you should inherit from the class `PruneBase`, you need to implement all abstract methods defined in `PruneBase` and overload other methods if needed. See the comments in `PruneBase` for details. (You could see `./prune_algorithm/prune_vgg16` for reference).
-4. Import the new model to `config.py` and parse the model correctly.
+  -  For the definition of the model, you should inherit from the class `ClassificationBase`, it has implement some essential functions for you. You only need to implement all abstract methods defined in `ClassificationBase`. See the comments in `ClassificationBase` for details. (You could see `./networks/vgg16` for reference).
+  - For the pruning algorithm of the model, you should inherit from the class `PruneBase`, you need to implement all abstract methods defined in `PruneBase` and overload other methods if needed. See the comments in `PruneBase` for details. (You could see `./prune_algorithm/prune_vgg16` for reference).
+2. Import the new model to `config.py` and parse the model correctly.
 

@@ -7,7 +7,7 @@ FLAGS = tf.app.flags.FLAGS
 slim = tf.contrib.slim
 
 tf.app.flags.DEFINE_string('train_dir', '/tmp/tmp_train', """Directory where to write event logs and checkpoint.""")
-tf.app.flags.DEFINE_string('data_dir', './data', """Path to the CIFAR-10 data directory.""")
+tf.app.flags.DEFINE_string('data_dir', './data', """Path to the data directory.""")
 tf.app.flags.DEFINE_string('dataset', 'cifar10', """dataset_name""")
 tf.app.flags.DEFINE_string('network', 'vgg', """network_name""")
 

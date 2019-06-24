@@ -49,5 +49,5 @@ CUDA_VISIBLE_DEVICES=7 python -u train.py --train_dir=$train_dir --dataset="cifa
 ## resnet-imagenet
 train_dir="resnet18-imagenet-model/n1"
 mkdir -p $train_dir
-CUDA_VISIBLE_DEVICES=0,5 python -u train.py --train_dir=$train_dir --dataset="imagenet" --data_dir="./data" \
+CUDA_VISIBLE_DEVICES=1,2 python -u train.py --train_dir=$train_dir --dataset="imagenet" --data_dir="./data" \
     --network="resnet18" 2>&1 | tee -a $train_dir/train.log

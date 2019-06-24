@@ -94,7 +94,7 @@ def test_input_fn(data_dir, batch_size, **kargs):
     return dataset
 
 if __name__ == '__main__':
-    dataset = train_input_fn("/wangwenxiao/prune/data/", 128, 250)
+    dataset = train_input_fn("../data/", 128, 250)
     iterator = dataset.make_one_shot_iterator()
     data = iterator.get_next()
     index = 0;
