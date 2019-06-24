@@ -52,13 +52,13 @@ class PruneResNet18(PruneBase):
     def _get_output_size_from_layer_name(self, name):
         if name.startswith("conv0"):
             return [self.image_size[0]//2, self.image_size[1]//2]
-        elif name.startswith("block0"):
-            return [self.image_size[0]//4, self.image_size[1]//4]
         elif name.startswith("block1"):
-            return [self.image_size[0]//8, self.image_size[1]//8]
+            return [self.image_size[0]//4, self.image_size[1]//4]
         elif name.startswith("block2"):
-            return [self.image_size[0]//16, self.image_size[1]//16]
+            return [self.image_size[0]//8, self.image_size[1]//8]
         elif name.startswith("block3"):
+            return [self.image_size[0]//16, self.image_size[1]//16]
+        elif name.startswith("block4"):
             return [self.image_size[0]//32, self.image_size[1]//32]
         elif name.startswith("dense"):
             return [1, 1]
@@ -93,7 +93,8 @@ class PruneResNet18(PruneBase):
             ## cut the output channel of this layer
             this_layers_names = [name]
             # peer_name is the linear projection in ResNet, only sub_block0 has liear projection
-            peer_name = name.replace("m2", "shortcut") if "sub_block0/m2" in name else None
+            peer_name = name.replace("m2", "shortcut") if ("sub_block0/m2" in name and \
+                                                           "block1/sub_block0" not in name) else None
             if peer_name is not None:
                 this_layers_names.append(peer_name)
 
@@ -169,18 +170,29 @@ class PruneResNet18(PruneBase):
         for i in range(1, self.block_nums + 1):
             block_name = "block%d" % i
             subset = self.__find_subset(importances, block_name, self.merge_all)
-            print("subset%d" % i, subset.keys())
+            # print("subset%d" % i, subset.keys())
             importances, _ = self.__mean_importances(importances, subset, i == self.block_nums, self.merge_all)
         return importances
 
     def _get_cut_layers_name_list(self, cut_channels, cut_layer_name):
         all_cut_layers = []
-        if ("m2" in cut_layer_name) or (self.merge_all and "m1" in cut_layer_name):
+        if "m2" in cut_layer_name: # or (self.merge_all and "m1" in cut_layer_name)
             index = 0
             while True:
                 name = re.sub(r"sub_block\d", "sub_block%d" % index, cut_layer_name)
-                name = name.replace("m1", "m2")
                 m_name = name.replace("m2", "m1")
+                if self.merge_all and m_name in cut_channels:
+                    all_cut_layers.append(m_name)
+                if name in cut_channels:
+                    all_cut_layers.append(name)
+                else:
+                    break
+                index += 1
+        elif self.merge_all and "m1" in cut_layer_name:
+            index = 0
+            while True:
+                name = re.sub(r"sub_block\d", "sub_block%d" % index, cut_layer_name)
+                m_name = name.replace("m1", "m2")
                 if name in cut_channels and m_name in cut_channels:
                     all_cut_layers.append(name)
                     all_cut_layers.append(m_name)

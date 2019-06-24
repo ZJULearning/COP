@@ -7,7 +7,7 @@ depth = 3
 image_bytes = height * width * depth
 num_examples_for_train = 1281167
 num_examples_for_test = 50000
-num_classes = 1001
+num_classes = 1001 # because the labels are from 1~1000, not 0~999
 
 def _parse_one_record(record, is_training, data_augmentation_args):
     feature_map = {
