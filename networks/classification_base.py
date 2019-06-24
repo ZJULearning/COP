@@ -33,7 +33,7 @@ class ClassificationBase(NetBase):
         regularization_loss = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
         re_loss = tf.add_n(regularization_loss)
 
-        total_loss += re_loss
+        total_loss = total_loss + re_loss
 
         return total_loss, re_loss
 

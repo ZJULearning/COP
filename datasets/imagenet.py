@@ -127,12 +127,12 @@ def train_input_fn(data_dir, batch_size, epochs, **kargs):
         if not os.path.exists(path):
             raise ValueError(path + " not found")
     dataset = tf.data.Dataset.list_files(filenames, shuffle=True)
-    dataset = dataset.apply(tf.data.experimental.parallel_interleave(tf.data.TFRecordDataset, cycle_length=10))
-    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+    dataset = tf.data.TFRecordDataset(dataset)
+    # dataset = dataset.apply(tf.data.experimental.parallel_interleave(tf.data.TFRecordDataset, cycle_length=10))
+    # dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     dataset = dataset.apply(tf.data.experimental.shuffle_and_repeat(100 * batch_size, epochs))
-
     dataset = dataset.apply(tf.data.experimental.map_and_batch(lambda record: _parse_one_record(record, True, kargs), batch_size))
-    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+    # dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     return dataset
 
 def test_input_fn(data_dir, batch_size, **kargs):
@@ -143,11 +143,12 @@ def test_input_fn(data_dir, batch_size, **kargs):
         if not os.path.exists(path):
             raise ValueError(path + " not found")
     dataset = tf.data.Dataset.list_files(filenames, shuffle=False)
-    dataset = dataset.apply(tf.data.experimental.parallel_interleave(tf.data.TFRecordDataset, cycle_length=10))
-    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+    dataset = tf.data.TFRecordDataset(dataset)
+    # dataset = dataset.apply(tf.data.experimental.parallel_interleave(tf.data.TFRecordDataset, cycle_length=10))
+    # dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     dataset = dataset.repeat(-1)
 
     dataset = dataset.apply(tf.data.experimental.map_and_batch(lambda record: _parse_one_record(record, False, kargs), batch_size))
-    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+    # dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     return dataset
 

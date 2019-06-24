@@ -81,7 +81,7 @@ def parse_net_and_dataset():
 ## parameters for network
 if network_name == "vgg11":
     if dataset_name == "imagenet":
-        args.train_batch_size = 64
+        args.train_batch_size = 128
         args.test_batch_size = 100
         args.image_size = [224, 224]
         args.num_gpus = 2
