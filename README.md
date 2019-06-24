@@ -23,15 +23,15 @@ You are highly **recommended** to use our [docker image](https://github.com/chee
 ## Quick Start
 ```bash
 # arguments:
-#		--train_dir: the directory to save the log file and checkout
-# 	--dataset: it could be "cifar10", "cifar100" and "imagenet"
-#		--data_dir: the directory to read data. 
-#			- For cifar10: The data files are $data_dir/cifar-10-batches-bin/*.bin
-#			- For cifar100: The data files are $data_dir/cifar-100-binary/*.bin
-#			- For imagenet: The data files are $data_dir/train/* and $data_dir/validation/*(TFRecord-type)
-#		--network: it could be "vgg16", "vgg11", "resnet18", "resnet32", "mobilenet_for_cifar" and "mobilenet_for_imagenet"
-#		--alpha, beta, gamma: they are the coefficients when computing the importance of filts, see the paper for details
-#		--prune_rate: the ratio of filters to be pruned
+#   --train_dir: the directory to save the log file and checkout
+#   --dataset: it could be "cifar10", "cifar100" and "imagenet"
+#   --data_dir: the directory to read data. 
+#     - For cifar10: The data files are $data_dir/cifar-10-batches-bin/*.bin
+#     - For cifar100: The data files are $data_dir/cifar-100-binary/*.bin
+#     - For imagenet: The data files are $data_dir/train/* and $data_dir/validation/*(TFRecord-type)
+#   --network: it could be "vgg16", "vgg11", "resnet18", "resnet32", "mobilenet_for_cifar" and "mobilenet_for_imagenet"
+#   --alpha, beta, gamma: they are the coefficients when computing the importance of filts, see the paper for details
+#   --prune_rate: the ratio of filters to be pruned
 
 
 ## to train a model
