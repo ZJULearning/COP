@@ -64,7 +64,7 @@ class ResNet18(ClassificationBase):
         print("params: ", params, " calculation: ", calculation)
         return params, calculation
 
-    def get_weights_from_model(self, model_path):
+    def get_weights_from_model(self, model_path, resnet_verison=1):
         reader = tf.train.NewCheckpointReader(model_path)
         all_variables = reader.get_variable_to_shape_map()
         print(all_variables.keys())
@@ -75,9 +75,9 @@ class ResNet18(ClassificationBase):
         kernel_weights["conv0/conv2d/gamma"] = reader.get_tensor("resnet18/conv0/batch_normalization/gamma")
         kernel_weights["conv0/conv2d/moving_mean"] = reader.get_tensor("resnet18/conv0/batch_normalization/moving_mean")
         kernel_weights["conv0/conv2d/moving_variance"] = reader.get_tensor("resnet18/conv0/batch_normalization/moving_variance")
-        ## block1~3
-        for i in range(1, 4):
-            # sub_block0~4
+        ## block1~4
+        for i in range(1, 5):
+            # sub_block0~1
             for j in range(2):
                 # m1~m2
                 for k in range(1, 3):
@@ -92,6 +92,7 @@ class ResNet18(ClassificationBase):
                 kw_prefix = "block%d/sub_block%d/shortcut/conv2d"  % (i, j)
                 s_prefix = "resnet18/block%d/sub_block%d/shortcut" % (i, j)
                 if s_prefix + "/conv2d/kernel" in all_variables:
+                    # print("====================", kw_prefix + "/kernel")
                     kernel_weights[kw_prefix + "/kernel"] = reader.get_tensor(s_prefix + "/conv2d/kernel")
                     kernel_weights[kw_prefix + "/beta"] = reader.get_tensor(s_prefix + "/batch_normalization/beta")
                     kernel_weights[kw_prefix + "/gamma"] = reader.get_tensor(s_prefix + "/batch_normalization/gamma")
@@ -109,7 +110,8 @@ class ResNet18(ClassificationBase):
         """
         if layer_type == "conv" or layer_type == "dense":
             prefix = "/conv2d" if layer_type == "conv" else "/dense"
-            saved_kernel = weights_dict.get(scope.name[9:] + "/kernel")
+            sk_prefix = "/conv2d" if layer_type == "conv" else ""
+            saved_kernel = weights_dict.get(scope.name[9:] + sk_prefix + "/kernel")
             if saved_kernel is not None:
                 weight = tf.get_default_graph().get_tensor_by_name(scope.name + prefix + "/kernel:0")
                 weight = tf.assign(weight, saved_kernel)
@@ -125,10 +127,10 @@ class ResNet18(ClassificationBase):
                 # else:
                 #     raise ValueError("unknown saved bias: " + scope.name[9:] + "/bias")
         elif layer_type == "bn":
-            saved_beta = weights_dict.get(scope.name[9:] + "/beta")
-            saved_gamma = weights_dict.get(scope.name[9:] + "/gamma")
-            saved_moving_mean = weights_dict.get(scope.name[9:] + "/moving_mean")
-            saved_moving_variance = weights_dict.get(scope.name[9:] + "/moving_variance")
+            saved_beta = weights_dict.get(scope.name[9:] + "/conv2d/beta")
+            saved_gamma = weights_dict.get(scope.name[9:] + "/conv2d/gamma")
+            saved_moving_mean = weights_dict.get(scope.name[9:] + "/conv2d/moving_mean")
+            saved_moving_variance = weights_dict.get(scope.name[9:] + "/conv2d/moving_variance")
             if saved_beta is not None:
                 beta = tf.get_default_graph().get_tensor_by_name(scope.name + "/batch_normalization/beta:0")
                 gamma = tf.get_default_graph().get_tensor_by_name(scope.name + "/batch_normalization/gamma:0")

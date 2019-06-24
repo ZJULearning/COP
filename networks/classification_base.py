@@ -6,18 +6,54 @@ from .net_base import NetBase
 class ClassificationBase(NetBase):
     @abstractmethod
     def get_params_and_calculation_from_channel_num(self, channel_num, num_classes, ori_size):
+        """
+        The method return the whole model's parameters and float-point operations.
+        Args:
+            channel_num: a python-list, which contains the number of channels of the whole model in sequence, 
+                e.g. config.py:args.ori_channels_num
+            num_classes: equal to datasets/dataset:num_classes
+            ori_size: the size of input image, e.g. [224, 224]
+        Return:
+            [parameters, float-point-operations], a python list
+        """
         pass
 
     @abstractmethod
     def get_weights_from_model(self, model_path):
+        """
+        Get all the weights of the network:
+        Args:
+            model_path: the path to store the checkpoint
+        Return:
+            an ordered dictionary of {layer_name: numpy array weights}
+        """
         pass
 
     @abstractmethod
-    def restore_weights(self, scope, layer_type, weights_dict):
+    def restore_weights(self):
+        """
+        Assign pretrained weights to new model. Add tf.assign op to tf.collection("init").
+        You may wish to refer to how VGG16 implements this method
+        Args:
+            The function is only called by self.network, so you could customize your arguments as need.
+        Return:
+            None
+        """
         pass
 
     @abstractmethod
     def network(self, inputs, num_classes, scope, is_training, kargs):
+        """
+        The inference stage of the network
+        Args:
+            inputs: input images of shape [batch_size, height, width, channels], a python-list
+            num_classes: e.g. 10 for cifar10, 100 for cifar100, 1001 for imagenet, an int
+            scope: the name scope, a string
+            is_training: True if you are training, False if you are testing, a boolean
+            kargs: contains all other parameters needed, a config.py:TrainArgs instance
+        Return:
+            the last layer's output of the network (logits without softmax)
+        """
         pass
 
     def loss(self, scope, logits, labels):

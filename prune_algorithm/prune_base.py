@@ -22,41 +22,108 @@ class PruneBase(ABC):
 
     @abstractmethod
     def _get_parameters_related(self, weight_name, cut_channels):
+        """
+        Get the parameters related to "weight_name". For example:
+            layer1 and layer2 are two consecutive layers. The number of output channels of layer1
+            influences the parameters of layer1 and layer2 simultaneously. So if 
+            weight_name="layer1", the method would return the sum of parameters of layer1 and layer2
+        Args:
+            weight_name: the layer name, e.g., "conv1"
+            cut_channels: an ordered dictionary of {layer name: [the indices of pruned channels of the layer]}
+        Return:
+            an integer, the number of parameters
+        """
         pass
 
     @abstractmethod
     def _get_computation_related(self, weight_name, cut_channels):
+        """
+        The same as _get_parameters_related, but this method return the number of float-point operations
+        Return:
+            an integer, the number of float-point operations
+        """
         pass
 
     @abstractmethod
     def _get_params_and_computation_of_whole_model(self, weights_dict):
+        """
+        Get the number of parameters and float-points operations of the whole model
+        Args:
+            weights_deict: an ordered dictionary, all the weights of the model
+        Return:
+            a list of 2 integers: [parameters, float-point operations]
+        """
         pass
 
     @abstractmethod
     def _get_output_size_from_layer_name(self, name):
+        """
+        Get the size of output feature maps of a certain layer
+        Args:
+            name: layer name
+        Return:
+            a list of 2 integers: [height, width]
+        """
         pass
 
     @abstractmethod
     def get_pruned_cared_weights(self, weights_dict):
+        """
+        Get the weights of the layers you want to prune
+        Args:
+            weights_dict: an ordered dictionary, all the weights of the model
+        Return:
+            an ordered dictionary, the weights we care during pruning. For example, it will not contain weights
+                of depth-wise layer for mobilenets
+        """
         pass
 
     @abstractmethod
     def get_pruned_weights(self):
+        """
+        Get numpy-type weights tensor after pruned
+        Return:
+            an ordered dictionary: {layer name: a numpy tensor of weights}
+        """
         pass
 
     def _importance_hook(self, importances):
+        """
+        some extra code after computing the importance of filters. For example, we need to compute
+         the average importance of some layers in ResNet, see prune_resnet*.py or our paper for details
+        """
         return importances
 
     def _get_cut_layers_name_list(self, cut_channels, cut_layer_name):
         return [cut_layer_name]
 
     def get_channels_nums(self, weights_dict, channel_type):
+        """
+        Get the number of channels of each layer.
+        Args:
+            weights_dict: an ordered dictionary, all the weights of the model
+            channel_type: 'output' or 'input', whether get the number of input or output channels
+        Return:
+            an ordered dictionary, whose keys are the same as weights_dict, {layer name: the number of channels}
+        """
         return prune_common.get_channels_nums(weights_dict, channel_type)
 
     def _get_normalized_feature(self, cared_weights_dict):
+        """
+        Get the importance of all the cared weights
+        Args:
+            cared_weights_dict: an ordered dictionary, the weights of the model
+        """
         return prune_common.get_normalized_feature(cared_weights_dict, self.importance_method, self.normalize_method)
 
     def _get_last_and_next_layer_name(self, weight_name):
+        """
+        Get the name of a certain name's last and next layer
+        Args:
+            weight_name: layer name
+        Return:
+            a list of 2 strings [its_last_layer_name, its_next_layer_name]
+        """
         keys = list(self.weights_dict.keys())
         ## find last layerf
         this_weight_index = keys.index(weight_name)
@@ -76,6 +143,10 @@ class PruneBase(ABC):
         return last_layer_name, next_layer_name
 
     def _get_last_and_next_block_name(self, weight_name):
+        """
+        For MobileNets, it returns the last and next point-wise layer names
+        For others, it returns the last_and_next_layer_name
+        """
         return self._get_last_and_next_layer_name(weight_name)
 
     def _iteratively_prune(self, cared_weights_dict, stat_dicts, cut_nums):
@@ -99,13 +170,21 @@ class PruneBase(ABC):
             ## find min imporantce
             importances = get_weights_importance(stat_dicts, self.top_k, computation_dicts, params_dicts, self.importance_coefficient)
             importances = self._importance_hook(importances) # for network with residual design, e.g., ResNet
+            for key, value in cut_channels.items():
+                if importances.get(key) is not None:
+                    # print(key, value)
+                    for channel in value:
+                        importances[key][channel] = np.inf
             argmin_within_layers = list(map(np.argmin, list(importances.values())))
             min_within_layers = list(map(np.min, list(importances.values())))
             argmin_cross_layers = np.argmin(np.array(min_within_layers))
             ## cut the least important channel
             cut_layer_name = list(importances.keys())[argmin_cross_layers]
             cut_channel_index = argmin_within_layers[argmin_cross_layers]
+            # if cut_layer_name == "block1/sub_block0/m1/conv2d/kernel" and cut_channel_index == 9:
+            #     print(min_within_layers)
             cut_layers_names = self._get_cut_layers_name_list(cut_channels, cut_layer_name)
+            # print(cut_layer_name, cut_layers_names)
             for cut_layer_name in cut_layers_names:
                 cut_channels[cut_layer_name].append(cut_channel_index)
 
@@ -128,6 +207,13 @@ class PruneBase(ABC):
         return cut_channels
 
     def get_prune_channels(self, prune_rate):
+        """
+        Get the indices of channels to be pruned
+        Args:
+            prune_rate: the prune rate of the whole model
+        Return:
+            an ordered dictionary: {layer name: the indices of pruned channels of the layer}
+        """
         cared_weights_dict = self.get_pruned_cared_weights(self.weights_dict)
 
         stat_dicts = self._get_normalized_feature(cared_weights_dict)
@@ -156,12 +242,18 @@ class PruneBase(ABC):
 
         for name, cut_channel in cut_channels.items():
             cut_channel = sorted(cut_channel)
-            assert len(set(cut_channel)) == len(cut_channel)
             print(name, len(cut_channel), cut_channel)
+            assert len(set(cut_channel)) == len(cut_channel)
 
         return cut_channels
 
     def get_pruned_ratio(self):
+        """
+        Get the pruned ratio according to the original weights and the pruned weights
+        Return:
+            Frr: the ratio of float-point operations to be reduced
+            Prr: the ratio of parameters to be pruned
+        """
         origin_params, origin_computation = self._get_params_and_computation_of_whole_model(self.weights_dict)
         retained_params, retained_computation = self._get_params_and_computation_of_whole_model(self.pruned_weights_dict)
         computation_pruned_ratio = 1 - retained_computation / origin_computation
