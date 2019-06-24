@@ -1,0 +1,1 @@
+1. imagenet_to_gcs.py is a script transplanted from Tensorflow-repo, it transforms standard imagenet dataset to a TFRecord-type one. please refer to (here)[ https://github.com/tensorflow/tpu/tree/master/tools/datasets ] for usage.
