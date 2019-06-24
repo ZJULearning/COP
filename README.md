@@ -50,7 +50,13 @@ Please see `train.sh` and `train_finetune.sh` for more usage. The imagenet datas
 
 ## Results
 
+### Results on VGG and ResNet
 
+![](./results/1.png)
+
+### Results on MobileNets
+
+![](./results/2.png)
 
 
 
