@@ -16,7 +16,7 @@ Numpy >= 1.14.1
 Older versions of dependencies are to be tested.
 
 
-You are highly **recommended** to use our [docker image](https://github.com/cheerss/deep-docker), which satisfies all the requirements above.
+You are highly **recommended** to use our [docker image](https://github.com/cheerss/deep-docker/tree/9.0-cudnn7-devel-ubuntu16.04), which satisfies all the requirements above.
 
 
 
