@@ -23,7 +23,7 @@ You are highly **recommended** to use our [docker image](https://github.com/chee
 ## Quick Start
 ```bash
 # arguments:
-#   --train_dir: the directory to save the log file and checkout
+#   --train_dir: the directory to save the log file and checkpoint
 #   --dataset: it could be "cifar10", "cifar100" and "imagenet"
 #   --data_dir: the directory to read data. 
 #     - For cifar10: The data files are $data_dir/cifar-10-batches-bin/*.bin
