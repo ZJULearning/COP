@@ -136,8 +136,7 @@ Reference to cite when you use COP in a research paper
   title={COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning},
   author={Wang, Wenxiao and Fu, Cong and Guo, Jishun and Cai, Deng and He, Xiaofei},
   booktitle={International Joint Conference on Artificial Intelligence},
-  volume={2019}
-  pages={},
+  volume={2019},
   year={2019},
 }
 ```
