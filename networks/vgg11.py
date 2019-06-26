@@ -56,7 +56,7 @@ class VGG11(ClassificationBase):
         """
         reader = tf.train.NewCheckpointReader(model_path)
         all_variables = reader.get_variable_to_shape_map()
-        print(all_variables.keys())
+        # print(all_variables.keys())
         kernel_weights = collections.OrderedDict()
         for i in range(1, 3):
             for j in range(1, 2):

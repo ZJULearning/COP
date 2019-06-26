@@ -67,7 +67,7 @@ class ResNet18(ClassificationBase):
     def get_weights_from_model(self, model_path, resnet_verison=1):
         reader = tf.train.NewCheckpointReader(model_path)
         all_variables = reader.get_variable_to_shape_map()
-        print(all_variables.keys())
+        # print(all_variables.keys())
         kernel_weights = collections.OrderedDict()
         ## conv0
         kernel_weights["conv0/conv2d/kernel"] = reader.get_tensor("resnet18/conv0/conv2d/kernel")
