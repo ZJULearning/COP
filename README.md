@@ -8,33 +8,6 @@ COP is a filter-level pruning algorithm for deep CNNs. It fully considers the co
 
 
 
-## Compared Algorithm
-
-[NS](https://arxiv.org/abs/1708.06519) ([code](https://github.com/liuzhuang13/slimming)): Learning Efficient Convolutional Networks through Network Slimming
-
-[PFA](https://arxiv.org/abs/1807.10585): Network Compression using Correlation Analysis of Layer Responses 
-
-[SFP](https://arxiv.org/abs/1808.06866) ([code](https://github.com/he-y/soft-filter-pruning)): Soft Filter Pruning for Accelerating Deep Convolutional Neural Networks
-
-[NRE](https://www.ijcai.org/proceedings/2018/0318.pdf): Efficient DNN Neuron Pruning by Minimizing Layer-wise Nonlinear
-Reconstruction Error
-
-[PFGM](https://arxiv.org/abs/1811.00250): Filter Pruning via Geometric Median for Deep Convolutional Neural Networks Acceleration
-
-[COP](https://arxiv.org/abs/1906.10337) (Ours): COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning
-
-### Results
-
-#### Results on VGG and ResNet
-
-![](./results/1.png)
-
-#### Results on MobileNets
-
-![](./results/2.png)
-
-
-
 ## Requirements
 
 Ubuntu 16.04
@@ -76,6 +49,35 @@ python auto_prune.py --train_dir=$train_dir --dataset="cifar10" --data_dir="./da
 ```
 
 Please see `train.sh` and `train_finetune.sh` for more usage. The imagenet dataset need to transforming to TFRecord-type first, see `extra/README.md` for details.
+
+
+
+## Compared Algorithm
+
+[NS](https://arxiv.org/abs/1708.06519) ([code](https://github.com/liuzhuang13/slimming)): Learning Efficient Convolutional Networks through Network Slimming
+
+[PFA](https://arxiv.org/abs/1807.10585): Network Compression using Correlation Analysis of Layer Responses 
+
+[SFP](https://arxiv.org/abs/1808.06866) ([code](https://github.com/he-y/soft-filter-pruning)): Soft Filter Pruning for Accelerating Deep Convolutional Neural Networks
+
+[NRE](https://www.ijcai.org/proceedings/2018/0318.pdf): Efficient DNN Neuron Pruning by Minimizing Layer-wise Nonlinear
+Reconstruction Error
+
+[PFGM](https://arxiv.org/abs/1811.00250): Filter Pruning via Geometric Median for Deep Convolutional Neural Networks Acceleration
+
+[COP](https://arxiv.org/abs/1906.10337) (Ours): COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning
+
+### Results
+
+#### Results on VGG and ResNet
+
+![](./results/1.png)
+
+#### Results on MobileNets
+
+![](./results/2.png)
+
+
 
 
 
