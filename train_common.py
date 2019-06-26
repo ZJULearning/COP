@@ -145,7 +145,7 @@ def run_op(ops, tf_training, store_model_path, train_args):
         # Restores from checkpoint
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
-        print('No checkpoint file found')
+        print('No checkpoint file found, train(or finetune) from gloabl step 0')
 
     summary_writer = tf.summary.FileWriter(store_model_path, sess.graph)
 

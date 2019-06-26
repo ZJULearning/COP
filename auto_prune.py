@@ -85,7 +85,7 @@ def train_with_graph(weights_dict, channel_num_after_pruned, weight_decay, store
 
 
 def train(_):
-    corr_normal_factor = collections.OrderedDict()
+    # corr_normal_factor = collections.OrderedDict()
     ckpt = tf.train.get_checkpoint_state(os.path.join(FLAGS.train_dir))
     store_model_path = ckpt.model_checkpoint_path
     init_weight_decay = config.args.weight_decay
@@ -131,7 +131,7 @@ def train(_):
     weight_decay = 1.1e-3 if FLAGS.weight_decay_growing else init_weight_decay
 
     print("The number of channels after pruned: ", channel_num_after_pruned.values())
-    print("Use correlation normalization factor: " + str(corr_normal_factor.values()))
+    # print("Use correlation normalization factor: " + str(corr_normal_factor.values()))
     print("Use weight decay: " + str(weight_decay))
 
     ## finetune the model
