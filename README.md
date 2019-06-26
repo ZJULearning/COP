@@ -132,11 +132,13 @@ def test_input_fn(data_dir, batch_size, **kargs):
 
 Reference to cite when you use COP in a research paper
 ```
-@article{wang2019cop,
+@inproceedings{wang2019cop,
   title={COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning},
   author={Wang, Wenxiao and Fu, Cong and Guo, Jishun and Cai, Deng and He, Xiaofei},
-  journal={arXiv preprint arXiv:1906.10337},
-  year={2019}
+  booktitle={International Joint Conference on Artificial Intelligence},
+  volume={2019}
+  pages={},
+  year={2019},
 }
 ```
 
