@@ -1,5 +1,4 @@
 # COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning
-Code for IJCAI2019 paper: [**COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning**](https://arxiv.org/abs/1906.10337)
 
 
 
@@ -28,11 +27,11 @@ Reconstruction Error
 
 #### Results on VGG and ResNet
 
-![](/Users/cheers/Desktop/COP/results/1.png)
+![](./results/1.png)
 
 #### Results on MobileNets
 
-![](/Users/cheers/Desktop/COP/results/2.png)
+![](./results/2.png)
 
 
 
