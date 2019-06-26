@@ -69,9 +69,11 @@ def get_normalized_feature(only_weights_dict, impt_method, normalize_method):
     if normalize_method == "max":
         norm_func = lambda stat: np.unique(stat)[-1]
     elif normalize_method == "l1":
-        norm_func = l1_norm
+        # norm_func = l1_norm
+        raise NotImplementedError
     elif normalize_method == "l2":
-        norm_func = l2_norm
+        # norm_func = l2_norm
+        raise NotImplementedError
     else:
         raise ValueError("Unknown normalization method")
     ## compute the feature

@@ -161,9 +161,9 @@ class PruneBase(ABC):
             params_dicts[weight_name] = self._get_parameters_related(weight_name, cut_channels)
             computation_dicts[weight_name] = self._get_computation_related(weight_name, cut_channels)
 
-        print(stat_dicts.keys())
-        print(computation_dicts.keys())
-        print(params_dicts.keys())
+        # print(stat_dicts.keys())
+        # print(computation_dicts.keys())
+        # print(params_dicts.keys())
         ## prune iteratively
         i = 0
         while i < cut_nums:
@@ -203,7 +203,8 @@ class PruneBase(ABC):
                     computation_dicts[next_layer_name] = self._get_computation_related(next_layer_name, cut_channels)
             i += len(cut_layers_names)
             if (i + 1) % 100 == 0:
-                print("cut %d channels" % (i+1))
+                print("cut %d channels finished" % (i+1))
+        print("cut %d channels finished" % i)
         return cut_channels
 
     def get_prune_channels(self, prune_rate):
@@ -217,7 +218,7 @@ class PruneBase(ABC):
         cared_weights_dict = self.get_pruned_cared_weights(self.weights_dict)
 
         stat_dicts = self._get_normalized_feature(cared_weights_dict)
-        print(self.weights_dict.keys())
+        # print(self.weights_dict.keys())
         ## compute the number of channels to be pruned
         all_channels_nums = list(self.get_channels_nums(cared_weights_dict, channel_type="input").values())
         conv_channels_nums = [cared_weights_dict[key].shape[2] for key in cared_weights_dict if "conv" in key]
@@ -232,7 +233,7 @@ class PruneBase(ABC):
         assert sum(all_channels_nums) == sum(conv_channels_nums) + sum(dense_channels_nums)
         conv_cut_nums = int(sum(conv_channels_nums) * prune_rate)
         dense_cut_nums = int(sum(dense_channels_nums) * prune_rate)
-        print("all cut channels: %d (%d + %d)" % (conv_cut_nums + dense_cut_nums, conv_cut_nums, dense_cut_nums))
+        print("The number of channels to be cut: %d (%d + %d)" % (conv_cut_nums + dense_cut_nums, conv_cut_nums, dense_cut_nums))
 
         if self.conv_dense_separate:
             pass

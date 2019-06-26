@@ -76,14 +76,14 @@ class PruneResNet32(PruneBase):
 
     # @abstractmethod
     def get_pruned_weights(self, cut_channels, version):
-        print(self.pruned_weights_dict.keys())
+        # print(self.pruned_weights_dict.keys())
         for name, cut_channel in cut_channels.items():
             _, next_layer_name = self._get_last_and_next_block_name(name)
             next_layer_names = [next_layer_name]
             next_peer_name = next_layer_name.replace("m1", "shortcut") if "sub_block0/m1" in next_layer_name else None
             if next_peer_name in self.pruned_weights_dict:
                 next_layer_names.append(next_peer_name)
-            print(name, next_layer_names)
+            # print(name, next_layer_names)
             assert next_layer_name is not None
 
             ## cut the output channel of this layer
@@ -171,12 +171,23 @@ class PruneResNet32(PruneBase):
 
     def _get_cut_layers_name_list(self, cut_channels, cut_layer_name):
         all_cut_layers = []
-        if ("m2" in cut_layer_name) or (self.merge_all and "m1" in cut_layer_name):
+        if "m2" in cut_layer_name: # or (self.merge_all and "m1" in cut_layer_name)
             index = 0
             while True:
                 name = re.sub(r"sub_block\d", "sub_block%d" % index, cut_layer_name)
-                name = name.replace("m1", "m2")
                 m_name = name.replace("m2", "m1")
+                if self.merge_all and m_name in cut_channels:
+                    all_cut_layers.append(m_name)
+                if name in cut_channels:
+                    all_cut_layers.append(name)
+                else:
+                    break
+                index += 1
+        elif self.merge_all and "m1" in cut_layer_name:
+            index = 0
+            while True:
+                name = re.sub(r"sub_block\d", "sub_block%d" % index, cut_layer_name)
+                m_name = name.replace("m1", "m2")
                 if name in cut_channels and m_name in cut_channels:
                     all_cut_layers.append(name)
                     all_cut_layers.append(m_name)
