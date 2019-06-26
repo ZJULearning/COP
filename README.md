@@ -128,3 +128,15 @@ def test_input_fn(data_dir, batch_size, **kargs):
   - For the pruning algorithm of the model, you should inherit from the class `PruneBase`, you need to implement all abstract methods defined in `PruneBase` and overload other methods if needed. See the comments in `PruneBase` for details. (You could see `./prune_algorithm/prune_vgg16` for reference).
 2. Import the new model to `config.py` and parse the model correctly.
 
+## Reference
+
+Reference to cite when you use COP in a research paper
+```
+@article{wang2019cop,
+  title={COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning},
+  author={Wang, Wenxiao and Fu, Cong and Guo, Jishun and Cai, Deng and He, Xiaofei},
+  journal={arXiv preprint arXiv:1906.10337},
+  year={2019}
+}
+```
+
