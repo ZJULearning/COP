@@ -1,5 +1,38 @@
 # COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning
-Code for IJCAI2019 paper: **COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning**
+Code for IJCAI2019 paper: [**COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning**](https://arxiv.org/abs/1906.10337)
+
+
+
+## Introduction
+
+COP is a filter-level pruning algorithm for deep CNNs. It fully considers the correlation among filters and the inequivalence between saving more storage resources and computing resources during the pruning process. This repository is a Tensorflow implementation of our algorithm in IJCAI2019 paper: [**COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning**](https://arxiv.org/abs/1906.10337)
+
+
+
+## Compared Algorithm
+
+[NS](https://arxiv.org/abs/1708.06519) ([code](https://github.com/liuzhuang13/slimming)): Learning Efficient Convolutional Networks through Network Slimming
+
+[PFA](https://arxiv.org/abs/1807.10585): Network Compression using Correlation Analysis of Layer Responses 
+
+[SFP](https://arxiv.org/abs/1808.06866) ([code](https://github.com/he-y/soft-filter-pruning)): Soft Filter Pruning for Accelerating Deep Convolutional Neural Networks
+
+[NRE](https://www.ijcai.org/proceedings/2018/0318.pdf): Efficient DNN Neuron Pruning by Minimizing Layer-wise Nonlinear
+Reconstruction Error
+
+[PFGM](https://arxiv.org/abs/1811.00250): Filter Pruning via Geometric Median for Deep Convolutional Neural Networks Acceleration
+
+[COP](https://arxiv.org/abs/1906.10337) (Ours): COP: Customized Deep Model Compression via Regularized Correlation-Based Filter-Level Pruning
+
+### Results
+
+#### Results on VGG and ResNet
+
+![](/Users/cheers/Desktop/COP/results/1.png)
+
+#### Results on MobileNets
+
+![](/Users/cheers/Desktop/COP/results/2.png)
 
 
 
@@ -44,21 +77,6 @@ python auto_prune.py --train_dir=$train_dir --dataset="cifar10" --data_dir="./da
 ```
 
 Please see `train.sh` and `train_finetune.sh` for more usage. The imagenet dataset need to transforming to TFRecord-type first, see `extra/README.md` for details.
-
-
-
-
-## Results
-
-### Results on VGG and ResNet
-
-![](./results/1.png)
-
-### Results on MobileNets
-
-![](./results/2.png)
-
-
 
 
 
@@ -127,6 +145,8 @@ def test_input_fn(data_dir, batch_size, **kargs):
   -  For the definition of the model, you should inherit from the class `ClassificationBase`, it has implement some essential functions for you. You only need to implement all abstract methods defined in `ClassificationBase`. See the comments in `ClassificationBase` for details. (You could see `./networks/vgg16` for reference).
   - For the pruning algorithm of the model, you should inherit from the class `PruneBase`, you need to implement all abstract methods defined in `PruneBase` and overload other methods if needed. See the comments in `PruneBase` for details. (You could see `./prune_algorithm/prune_vgg16` for reference).
 2. Import the new model to `config.py` and parse the model correctly.
+
+
 
 ## Reference
 
