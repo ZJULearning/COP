@@ -65,25 +65,24 @@ def train_input_fn(data_dir, batch_size, epochs, **kargs):
     for path in filenames:
         if not os.path.exists(path):
             raise ValueError(path + " not found")
-    dataset = tf.data.Dataset.list_files(filenames, shuffle=True)
-    dataset = dataset.apply(tf.data.experimental.parallel_interleave(
-        lambda name:tf.data.FixedLengthRecordDataset(name, record_bytes), cycle_length=4))
+    # dataset = dataset.apply(tf.data.experimental.parallel_interleave(
+    #     lambda name:tf.data.FixedLengthRecordDataset(name, record_bytes), cycle_length=4))
+    dataset = tf.data.FixedLengthRecordDataset(filenames, record_bytes)
 
-    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+    # dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     dataset = dataset.apply(tf.data.experimental.shuffle_and_repeat(2 * num_examples_for_train, epochs))
 
     dataset = dataset.apply(tf.data.experimental.map_and_batch(lambda record: _parse_one_record(record, True, kargs), batch_size))
-    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+    # dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     return dataset
 
 def test_input_fn(data_dir, batch_size, **kargs):
     filenames = [os.path.join(data_dir, 'cifar-10-batches-bin', 'test_batch.bin')]
     print("test data files lists: " + str(filenames))
-    files = tf.data.Dataset.list_files(filenames, shuffle=False)
     dataset = tf.data.FixedLengthRecordDataset(filenames, record_bytes)
 
     dataset = dataset.repeat(-1)
     dataset = dataset.apply(tf.data.experimental.map_and_batch(lambda record: _parse_one_record(record, False, kargs), batch_size))
-    dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+    # dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
     return dataset
 
