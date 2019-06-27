@@ -48,7 +48,7 @@ train_dir=vgg-cifar10-model
 python auto_prune.py --train_dir=$train_dir --dataset="cifar10" --data_dir="./data" --network="vgg16" --alpha=1.0 --beta=0.0 --gamma=3.0 --prune_rate=0.1
 ```
 
-Please see `train.sh` and `train_finetune.sh` for more usage. The imagenet dataset need to transforming to TFRecord-type first, see `extra/README.md` for details.
+Please see `train.sh` and `prune.sh` for more usage. The imagenet dataset need to transforming to TFRecord-type first, see `extra/README.md` for details.
 
 
 
