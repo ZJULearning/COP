@@ -65,15 +65,12 @@ def get_normalized_feature(only_weights_dict, impt_method, normalize_method):
     else:
         raise ValueError("Unknown importance metric")
     ## choose the method of normalizing
-    ## TODO: l1 norm l2 norm
     if normalize_method == "max":
         norm_func = lambda stat: np.unique(stat)[-1]
     elif normalize_method == "l1":
-        # norm_func = l1_norm
-        raise NotImplementedError
+        norm_func = lambda stat: np.sum(np.abs(stat)) / 2
     elif normalize_method == "l2":
-        # norm_func = l2_norm
-        raise NotImplementedError
+        norm_func = lambda stat: numpy.linalg.norm(stat)
     else:
         raise ValueError("Unknown normalization method")
     ## compute the feature
