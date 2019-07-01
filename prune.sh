@@ -63,9 +63,9 @@ CUDA_VISIBLE_DEVICES=1 python -u auto_prune.py --train_dir=$train_dir --dataset=
     2>&1 | tee -a $train_dir/prune$prune_rate/finetune.log
 
 ## resnet18-imagenet
-prune_rate=0.65
+prune_rate=0.32
 train_dir="resnet18-imagenet-model/n1"
 mkdir -p $train_dir/prune$prune_rate
-CUDA_VISIBLE_DEVICES=1,2 python -u auto_prune.py --train_dir=$train_dir --dataset="imagenet" --data_dir="./data" \
+CUDA_VISIBLE_DEVICES=0,2 python -u auto_prune.py --train_dir=$train_dir --dataset="imagenet" --data_dir="./data" \
     --network="resnet18" --alpha=1.0 --beta=1.0 --gamma=1.0 --prune_rate=$prune_rate \
     2>&1 | tee -a $train_dir/prune$prune_rate/finetune.log
