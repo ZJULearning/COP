@@ -79,6 +79,13 @@ def _data_augmentation(image, label, bbox, data_augmentation_args):
         image = tf.random_crop(reshaped_image, [height, width, depth])
         image = tf.cast(image, tf.float32)
 
+    ## if none of above
+    if not (data_augmentation_args["crop_bbox"] or data_augmentation_args["resize"] or data_augmentation_args["padding"]):
+        image = tf.expand_dims(image, 0)
+        image = tf.image.resize_bilinear(image, [256, 256])
+        image = tf.squeeze(image)
+        image = tf.image.resize_image_with_crop_or_pad(image, height, width) # to 224*224
+
     ## mirroring
     if data_augmentation_args["mirroring"]:
         image = tf.image.random_flip_left_right(image)

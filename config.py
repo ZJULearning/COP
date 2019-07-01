@@ -96,6 +96,9 @@ if network_name == "vgg11":
         args.initial_learning_rate = 0.01
         args.max_epochs = 120
         args.ori_channels_num = [64, 128, 256, 256, 512, 512, 512, 512, 4096, 4096]
+
+        ## you may wish to use data augmentation as follows when training but only use "mirroring" when pruning
+        ##  to improve the performance
         args.data_augmentation_args = {"resize": True, "crop_bbox": False, "padding": False,
                                        "bright": False, "mirroring": True, 
                                        "mean": [123.68, 116.779, 103.939], "std": [1.0, 1.0, 1.0]}
@@ -117,6 +120,9 @@ elif network_name == "vgg16":
         args.initial_learning_rate = 0.1
         args.max_epochs = 250
         args.ori_channels_num = [64, 64, 128, 128, 256, 256, 256, 512, 512, 512, 512, 512, 512, 512]
+
+        ## you may wish to set "bright" to True when training but set it to False when pruning to improve
+        ##  the performance for VGG16 on cifar
         args.data_augmentation_args = {"padding": True, "bright": True, "mirroring": True, 
                                         "mean": 120.707, "std": 64.15}
         
