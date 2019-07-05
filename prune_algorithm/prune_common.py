@@ -70,7 +70,7 @@ def get_normalized_feature(only_weights_dict, impt_method, normalize_method):
     elif normalize_method == "l1":
         norm_func = lambda stat: np.sum(np.abs(stat)) / 2
     elif normalize_method == "l2":
-        norm_func = lambda stat: numpy.linalg.norm(stat)
+        norm_func = lambda stat: np.linalg.norm(stat)
     else:
         raise ValueError("Unknown normalization method")
     ## compute the feature
@@ -156,7 +156,7 @@ def get_cosine_sim(weights):
     feature = weights
     feature_t = np.transpose(feature, [0, 2, 1])
 
-    norm = numpy.linalg.norm(feature, ord=2, axis=2, keepdims=True)
+    norm = np.linalg.norm(feature, ord=2, axis=2, keepdims=True)
     norm_t = np.transpose(norm, [0, 2, 1])
 
     sim = np.matmul(feature, feature_t) / (np.matmul(norm, norm_t) + 1e-8)
